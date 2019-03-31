@@ -1,0 +1,8 @@
+Cosas que no he tenido en cuenta:
+-Ajustar el consumo de kWh teniendo en cuenta la velocidad, el peso y el desnivel (Ahora mismo hay una aproximación usando solo
+el desnivel).
+
+-Las paradas existentes.
+
+-La velocidad media de cada tramo. Calcular el tiempo que se ha tardado en completar la ruta.
+
