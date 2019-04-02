@@ -1,8 +1,13 @@
 Cosas que no he tenido en cuenta:
--Ajustar el consumo de kWh teniendo en cuenta la velocidad, el peso y el desnivel (Ahora mismo hay una aproximación usando solo
-el desnivel).
-
--Las paradas existentes.
+-Ajustar el consumo de kWh teniendo en cuenta la velocidad, el peso y el desnivel (Ahora mismo hay una aproximación
+usando solo el desnivel).
 
 -La velocidad media de cada tramo. Calcular el tiempo que se ha tardado en completar la ruta.
+
+-Problema: si los individuos son binarios, no podemos decidir si queremos aportar ciertos Km a cada sección, por lo
+que se van a ir llenando uno a uno y puede terminar con bateria de sobra.
+Ejemplo el caso de [1, 0, 0, 0, 1, 1, 1], es el mejor que se encuentra, pero nos sobra 0.76 kWh que no podemos repartir
+en otras secciones.
+
+-aprender ml, memoria tfg
 

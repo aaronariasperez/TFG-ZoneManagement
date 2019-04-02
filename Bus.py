@@ -6,7 +6,7 @@ class Bus:
         :param route: the route assigned to the bus
         :param charge: the total available charge
         :param load: the total weight of the passengers for each section
-        :param ac: True if the air conditioner is activated
+        :param ac: extra consumption of the ac
         """
         self.identity = identity
         self.route = route
