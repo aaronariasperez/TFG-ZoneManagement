@@ -1,11 +1,8 @@
 import math
 import numpy as np
+import csv
 
-dist = 2400
-time = dist*0.001 / 20
-h = round(time)
-m = round(time%1*60)
-print(h)
-print(m)
-
-print(np.random.normal(0.5,0.1))
+with open('shit.csv', mode='w', newline='') as shit:
+    dataset_writer = csv.writer(shit, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    for i in range(15):
+        dataset_writer.writerow(['whaaat', 'hee', 'aaaa'])
