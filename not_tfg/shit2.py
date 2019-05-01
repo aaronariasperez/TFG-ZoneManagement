@@ -1,8 +1,8 @@
 import math
 import numpy as np
 import csv
+from ast import literal_eval as make_tuple
 
-with open('shit.csv', mode='w', newline='') as shit:
-    dataset_writer = csv.writer(shit, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    for i in range(15):
-        dataset_writer.writerow(['whaaat', 'hee', 'aaaa'])
+a = "asdf"
+
+print(make_tuple(a)[0])

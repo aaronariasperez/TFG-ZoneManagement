@@ -46,7 +46,7 @@ def simulation(zone_assignment, main_bus, zexp):
         if assignment == 1 and main_bus.charge > 0:  # if green section and there is enough charge
             dist = 0
 
-            if section.slope > 0:
+            if section.slope >= 1:
                 future_charge = main_bus.charge - (ct.light_uphill_comsuption * section.distance * 0.001) * main_bus.ac
 
                 if future_charge >= 0:
@@ -57,7 +57,7 @@ def simulation(zone_assignment, main_bus, zexp):
                     dist = float(main_bus.charge) / (ct.light_uphill_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
-            elif section.slope == 0:
+            elif -1 < section.slope < 1:
                 future_charge = main_bus.charge - (ct.flat_comsuption * section.distance * 0.001) * main_bus.ac
 
                 if future_charge >= 0:
@@ -69,7 +69,7 @@ def simulation(zone_assignment, main_bus, zexp):
                     dist = float(main_bus.charge) / (ct.flat_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
-            elif section.slope < 0:
+            elif section.slope <= -1:
                 future_charge = main_bus.charge - (ct.light_downhill_comsuption * section.distance * 0.001) * main_bus.ac
 
                 if future_charge >= 0:
@@ -118,7 +118,7 @@ def simulation_noSchedule(zone_assignment, main_bus, zexp):
         if assignment == 1 and main_bus.charge > 0:  # if green section and there is enough charge
             dist = 0
 
-            if section.slope > 0:
+            if section.slope >= 1:
                 future_charge = main_bus.charge - (ct.light_uphill_comsuption * section.distance * 0.001) * main_bus.ac
 
                 if future_charge >= 0:
@@ -129,7 +129,7 @@ def simulation_noSchedule(zone_assignment, main_bus, zexp):
                     dist = float(main_bus.charge) / (ct.light_uphill_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
-            elif section.slope == 0:
+            elif -1 < section.slope < 1:
                 future_charge = main_bus.charge - (ct.flat_comsuption * section.distance * 0.001) * main_bus.ac
 
                 if future_charge >= 0:
@@ -141,7 +141,7 @@ def simulation_noSchedule(zone_assignment, main_bus, zexp):
                     dist = float(main_bus.charge) / (ct.flat_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
-            elif section.slope < 0:
+            elif section.slope <= -1:
                 future_charge = main_bus.charge - (ct.light_downhill_comsuption * section.distance * 0.001) * main_bus.ac
 
                 if future_charge >= 0:

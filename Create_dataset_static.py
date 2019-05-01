@@ -1,21 +1,22 @@
 import Simulation
 from Bus import Bus
-from Route import Route
-from Section import Section
 import Constants as ct
 import random
 import numpy
-import matplotlib.pyplot as plt
 from deap import base, creator, tools, algorithms
 import csv
-from Create_route_csv import create_route
+from Create_route_csv import create_route, read_route
 
 
 # ****Parameters and environment initialization****
 
 path_windows = 'E:\Dropbox\TFG\TFG_code\Escenario.csv'
-path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/dataset.csv'
-route = create_route('E:\Dropbox\TFG\TFG_code\Escenario.csv')
+path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/Escenario.csv'
+path_windows2 = 'E:\Dropbox\TFG\TFG_code\\route.csv'
+path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/route.csv'
+
+#create_route(path_windows)  # use when a new green section assignation required (random)
+route = read_route(path_windows2)
 
 zexp = []
 greenKm_expected = 0
@@ -89,7 +90,7 @@ def zone_assignment_system():
     stats.register("max", numpy.max)
 
     pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, 100, 100, cxpb=0.5, mutpb=0.2, ngen=10000, stats=stats, halloffame=hof,
-                                       verbose=False)
+                                       verbose=True)
 
     return pop, logbook, hof
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
         travelled_km = 0
         for i in range(len(hof[0])):
             if hof[0][i] == 0:
-                green = '0' # green and normal are two variables for the two categories of the section (green or normal)
+                green = '0'  # green and normal are two variables for the two types of the section (green or normal)
                 normal = '1'
             else:
                 green = '1'

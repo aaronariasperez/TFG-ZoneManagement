@@ -15,12 +15,18 @@ def shuffle_two_arrays(x, y):
 
 def main(x_train, x_test, y_train, y_test):
     input_size = 6
-    batch_size = 10
-    hidden_neurons = 20
-    epochs = 10000
+    batch_size = 100
+    hidden_neurons = 7
+    epochs = 100000
 
     model = Sequential()
     model.add(Dense(hidden_neurons, input_dim=input_size))
+    model.add(Activation('sigmoid'))
+    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
+    model.add(Activation('sigmoid'))
+    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
+    model.add(Activation('sigmoid'))
+    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
     model.add(Activation('sigmoid'))
     model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
     model.add(Activation('sigmoid'))
@@ -31,7 +37,7 @@ def main(x_train, x_test, y_train, y_test):
                   optimizer='sgd')
 
     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
-              verbose=0)
+              verbose=1)
 
     score = model.evaluate(x_test, y_test, verbose=1)
     print('Test accuracy:', score[1])

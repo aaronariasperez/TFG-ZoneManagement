@@ -5,6 +5,7 @@ import Constants as ct
 import numpy as np
 
 
+# ****Reads the Escenario.csv and returns the useful information****
 def get_route_from_csv(path):
     slopes = []
     distances = []
@@ -26,6 +27,7 @@ def get_route_from_csv(path):
     return [slopes, distances, stops]
 
 
+# ****Using the information returned by ge_route_from_csv, creates the route.csv****
 def create_route(path):
     [slopes, distances, stops] = get_route_from_csv(path)
 
@@ -40,7 +42,23 @@ def create_route(path):
         sec = Section(i, type_sections[i], slopes[i], distances[i], stops[i], ct.avg_speed)
         sections.append(sec)
 
+    with open('route.csv', mode='w', newline='') as route_write:
+        dataset_writer = csv.writer(route_write, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        for sec in sections:
+            dataset_writer.writerow([sec.identity, sec.section_type, sec.slope, sec.distance, sec.stop, ct.avg_speed])
+
+
+# ****Reads the route.csv and returns a route with this information****
+def read_route(path):
+    sections = []
+    with open(path, mode='r') as data:
+        csv_reader = csv.reader(data, delimiter=',')
+        for row in csv_reader:
+            stop = True if row[4] == 'True' else False
+            sec = Section(int(row[0]), int(row[1]), float(row[2]), float(row[3]), stop, float(row[5]))
+            sections.append(sec)
+
     route = Route(1, sections, [])
 
     return route
-
