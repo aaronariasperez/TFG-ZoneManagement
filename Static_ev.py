@@ -51,7 +51,7 @@ def eval_zone(individual):
 
     fit = 0
     for i, t in enumerate(zexp):
-        if t == 1:
+        if t == 1 and zcov[i] == 1:
             fit += 2*km_cov[i]
         if t == 0:
             fit += km_cov[i]
@@ -105,6 +105,18 @@ if __name__ == "__main__":
     print("The expected sections to be covered\n%s" % zexp)
     print("The sections covered\n%s" % zcov)
     print("The remaining charge %skWh" % remaining_charge)
+
+    normal_kms = 0
+    green_kms = 0
+    sections = route.sections
+    for i, sec in enumerate(sections):
+        if sec.section_type == 1:
+            green_kms += km_cov[i]
+        else:
+            normal_kms += km_cov[i]
+
+    print("Green kms covered: %s of %s" % (green_kms, greenKm_expected/1000))
+    print("Normal kms covered: %s of %s" % (normal_kms, normalKm_expected/1000))
 
     # ****Write the solution in the format: [fitness,0,1,0,....]****
     with open('solution_ev.csv', mode='w', newline='') as dataset:

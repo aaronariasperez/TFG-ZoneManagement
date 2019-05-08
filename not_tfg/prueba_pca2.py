@@ -1,9 +1,33 @@
-from keras.datasets import mnist
+from sklearn.decomposition import PCA
+from sklearn.datasets import load_iris
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.utils import np_utils
 from keras.layers.core import Dense, Activation
-import numpy as np
-import csv
+
+
+x, y = load_iris(True)
+
+x = np.array(x)
+y = np.array(y)
+pca = PCA(n_components=2)
+pca.fit(x)
+
+PCA(copy=True, n_components=2, whiten=False)
+
+x_ = pca.transform(x)
+
+x1 = x[np.argwhere(y==0)[:, 0], :]
+x2 = x[np.argwhere(y==1)[:, 0], :]
+x3 = x[np.argwhere(y==2)[:, 0], :]
+
+#plt.scatter(x1[:,0],x1[:,1],c='red')
+#plt.scatter(x2[:,0],x2[:,1],c='blue')
+#plt.scatter(x3[:,0],x3[:,1],c='green')
+
+#plt.show()
 
 
 def shuffle_two_arrays(x, y):
@@ -14,15 +38,13 @@ def shuffle_two_arrays(x, y):
 
 
 def main(x_train, x_test, y_train, y_test):
-    input_size = 3
-    batch_size = 10
-    hidden_neurons = 10
-    epochs = 12000
+    input_size = 4
+    batch_size = 20
+    hidden_neurons = 8
+    epochs = 5000
 
     model = Sequential()
     model.add(Dense(hidden_neurons, input_dim=input_size))
-    model.add(Activation('sigmoid'))
-    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
     model.add(Activation('sigmoid'))
     model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
     model.add(Activation('sigmoid'))
@@ -45,30 +67,14 @@ def main(x_train, x_test, y_train, y_test):
     return model
 
 
-# ****Read dataset from csv and reformat it****
-x = []
-y = []
-
-path_windows = 'E:\Dropbox\TFG\TFG_code\dataset.csv'
-path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/dataset.csv'
-
-with open(path_linux, mode='r') as dataset:
-    csv_reader = csv.reader(dataset, delimiter=',')
-    for row in csv_reader:
-        #x.append([float(x) for x in row[:-1]])
-        x.append([float(x) for x in np.take(row,[0,1,3])])
-        y.append([float(x) for x in row[-1:]])
-
-x = np.array(x)
-classes = 2
+classes = 3
 y = np_utils.to_categorical(np.array(y), classes)
 
-print(np.shape(x))
-
-print(y[0])
-print(y[3])
+print(y)
 
 shuffle_two_arrays(x, y)
+
+print(x.shape)
 
 p = int(0.7*x.shape[0])
 
@@ -79,5 +85,5 @@ y_test = y[p:, :]
 
 model = main(x_train, x_test, y_train, y_test)
 
-model.save('trained_model.h5')
-
+#prediction = model.predict(np.array([[1, 0, 100, -20, 100, 10]]))
+#print(prediction)

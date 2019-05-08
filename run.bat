@@ -1,0 +1,1 @@
+FOR /L %%i IN (1,1,20) DO python Create_dataset_static.py %1

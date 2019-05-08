@@ -81,7 +81,8 @@ def simulation(zone_assignment, main_bus, zexp):
                     main_bus.charge = 0
 
             km_cov[index] = dist
-            charges[-1] = main_bus.charge
+
+    charges[-1] = main_bus.charge
 
     return [arrival_times, km_cov, zone_covered, main_bus.charge, charges]
 
@@ -153,6 +154,7 @@ def simulation_noSchedule(zone_assignment, main_bus, zexp):
                     main_bus.charge = 0
 
             km_cov[index] = dist
-            charges[-1] = main_bus.charge
+
+    charges[-1] = main_bus.charge
 
     return [km_cov, zone_covered, main_bus.charge, charges]
