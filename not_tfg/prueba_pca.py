@@ -15,7 +15,7 @@ path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/dataset.csv'
 with open(path_linux, mode='r') as dataset:
     csv_reader = csv.reader(dataset, delimiter=',')
     for row in csv_reader:
-        x.append([float(x) for x in np.take(row,[0,1,3])])
+        x.append([float(x) for x in np.take(row,[0,1,2,4,5,6])])
         y.append([float(x) for x in row[-1:]])
 
 x = np.array(x)

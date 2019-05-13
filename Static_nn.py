@@ -1,9 +1,9 @@
-from keras.datasets import mnist
 from keras.models import Sequential
 from keras.utils import np_utils
 from keras.layers.core import Dense, Activation
 import numpy as np
 import csv
+import os
 
 
 def shuffle_two_arrays(x, y):
@@ -13,23 +13,17 @@ def shuffle_two_arrays(x, y):
     np.random.shuffle(y)
 
 
-def main(x_train, x_test, y_train, y_test):
-    input_size = 3
-    batch_size = 10
-    hidden_neurons = 10
-    epochs = 12000
+def main(x_train, x_test, y_train, y_test, n_layers, n_neurons):
+    input_size = 6
+    batch_size = 32
+    hidden_neurons = n_neurons
+    epochs = 25000
 
     model = Sequential()
-    model.add(Dense(hidden_neurons, input_dim=input_size))
-    model.add(Activation('sigmoid'))
-    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
-    model.add(Activation('sigmoid'))
-    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
-    model.add(Activation('sigmoid'))
-    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
-    model.add(Activation('sigmoid'))
-    model.add(Dense(hidden_neurons, input_dim=hidden_neurons))
-    model.add(Activation('sigmoid'))
+    for i in range(n_layers):
+        model.add(Dense(hidden_neurons, input_dim=input_size))
+        model.add(Activation('sigmoid'))
+
     model.add(Dense(classes, input_dim=hidden_neurons))
     model.add(Activation('softmax'))
 
@@ -42,31 +36,45 @@ def main(x_train, x_test, y_train, y_test):
     score = model.evaluate(x_test, y_test, verbose=1)
     print('Test accuracy:', score[1])
 
-    return model
+    return model, score[1]
 
 
 # ****Read dataset from csv and reformat it****
 x = []
 y = []
 
-path_windows = 'E:\Dropbox\TFG\TFG_code\dataset.csv'
-path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/dataset.csv'
+path_windows = 'E:\Dropbox\TFG\TFG_code\\norm_dataset.csv'
+path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/norm_dataset.csv'
 
-with open(path_linux, mode='r') as dataset:
+with open(path_windows, mode='r') as dataset:
     csv_reader = csv.reader(dataset, delimiter=',')
     for row in csv_reader:
-        #x.append([float(x) for x in row[:-1]])
-        x.append([float(x) for x in np.take(row,[0,1,3])])
+        x.append([float(x) for x in row[:-1]])
+        #x.append([float(x) for x in np.take(row,[0,1,3,4,5,6])])
         y.append([float(x) for x in row[-1:]])
 
+# ****This is for balance the data (50% of each class)****
+number_of_electrics = sum([a[0] for a in y])
+shuffle_two_arrays(x, y)
+cont = 0
+i = 0
+total = len(y)
+while cont < (total-(2*number_of_electrics)):
+    if y[i][0] == 0:
+        del x[i]
+        del y[i]
+        i -= 1
+        cont += 1
+    i += 1
+
+# ****Adapting the variables for the training****
+print('Number of electrics: %s' % str(sum([a[0] for a in y])))
+print('Number of normals: %s' % str(len(y)-sum([a[0] for a in y])))
 x = np.array(x)
 classes = 2
 y = np_utils.to_categorical(np.array(y), classes)
 
-print(np.shape(x))
-
-print(y[0])
-print(y[3])
+print('Shape of x: %s' % str(np.shape(x)))
 
 shuffle_two_arrays(x, y)
 
@@ -77,7 +85,14 @@ y_train = y[:p, :]
 x_test = x[p:, :]
 y_test = y[p:, :]
 
-model = main(x_train, x_test, y_train, y_test)
+# ****Train and save the model****
+os.remove('static_nn_results.csv')
+for n_n in [14]:
+    for n_l in [5]:
+        model, score = main(x_train, x_test, y_train, y_test, n_l, n_n)
+        model.save('models/trained_model'+str(n_l)+'_'+str(n_n)+'.h5')
+        f_result = open('static_nn_results.csv', 'a')
+        aux = str(n_l)+','+str(n_n)+','+str(score)+'\n'
+        f_result.write(aux)
 
-model.save('trained_model.h5')
-
+# Top Test accuracy: 0.7814371258458432 - con 10000 epochs, 5 capas y 14 neuronas

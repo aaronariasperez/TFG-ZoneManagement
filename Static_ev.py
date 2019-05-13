@@ -87,7 +87,7 @@ def zone_assignment_system():
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, 100, 100, cxpb=0.5, mutpb=0.2, ngen=10000, stats=stats, halloffame=hof,
+    pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, 100, 100, cxpb=0.5, mutpb=0.2, ngen=10, stats=stats, halloffame=hof,
                                        verbose=False)
 
     return pop, logbook, hof

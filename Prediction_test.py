@@ -5,9 +5,8 @@ import numpy as np
 path_windows3 = 'E:\Dropbox\TFG\TFG_code\\trained_model.h5'
 path_linux3 = r'/home/aaron/Dropbox/TFG/TFG_code/trained_model.h5'
 
-model = load_model(path_linux3)
-
-prediction = model.predict(np.array([[0, 1, -20]]))
+model = load_model(path_windows3)
+prediction = model.predict(np.array([[-1, 0.5, 0.1, 1, 0.1, 0.4]]))
 print(prediction)
 
 if prediction[0][0] >= prediction[0][1]:

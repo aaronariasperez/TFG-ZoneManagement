@@ -1,6 +1,4 @@
 import Simulation
-from Section import Section
-from Route import Route
 from Bus import Bus
 import Constants as ct
 from Create_route_csv import create_route

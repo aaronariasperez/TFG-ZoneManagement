@@ -96,7 +96,7 @@ def zone_assignment_system():
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, 100, 100, cxpb=0.5, mutpb=0.2, ngen=20, stats=stats, halloffame=hof,
+    pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, 100, 100, cxpb=0.5, mutpb=0.2, ngen=10000, stats=stats, halloffame=hof,
                                        verbose=False)
 
     return pop, logbook, hof
@@ -112,37 +112,40 @@ if __name__ == "__main__":
     # [green expected, normal expected, distance, slope, remaining charge, remaining meters (normal),
     # remaining meters (green), output of the GA for this section]
 
-    aux = 'datasets/dataset' + str(float(sys.argv[1])*100)[:-2] + '.csv' # clear datasets folder before execute this
-    with open(aux, mode='a', newline='') as dataset:
-        dataset_writer = csv.writer(dataset, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    valid = hof[0].fitness.values[0] >= 0
 
-        main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
+    if valid:
+        aux = 'datasets/dataset' + str(float(sys.argv[1])*100)[:-2] + '.csv' # clear datasets folder before execute this
+        with open(aux, mode='a', newline='') as dataset:
+            dataset_writer = csv.writer(dataset, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        [km_cov, zcov, remaining_charge, charges] = Simulation.simulation_noSchedule(hof[0], main_bus, zexp)
+            main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
 
-        #print("The expected sections to be covered\n%s" % zexp)
-        #print("The sections covered\n%s" % zcov)
-        #print("The remaining charge %skWh" % remaining_charge)
+            [km_cov, zcov, remaining_charge, charges] = Simulation.simulation_noSchedule(hof[0], main_bus, zexp)
 
-        total_km_normal = sum([x.distance if x.section_type == 0 else 0 for x in route.sections])
-        total_km_green = sum([x.distance if x.section_type == 1 else 0 for x in route.sections])
-        travelled_km_normal = 0
-        travelled_km_green = 0
-        for i in range(len(hof[0])):
-            if route.sections[i].section_type == 0:
-                green_exp = '0'
-                normal_exp = '1'
-            else:
-                green_exp = '1'
-                normal_exp = '0'
-            distance = route.sections[i].distance
-            slope = route.sections[i].slope
-            charge = charges[i]
-            remaining_normal = total_km_normal - travelled_km_normal
-            remaining_green = total_km_green - travelled_km_green
-            travelled_km_normal += distance if route.sections[i].section_type == 0 else 0
-            travelled_km_green += distance if route.sections[i].section_type == 1 else 0
-            y = hof[0][i]
-            dataset_writer.writerow([green_exp, normal_exp, distance, slope, charge, remaining_normal, remaining_green, y])
+            #print("The expected sections to be covered\n%s" % zexp)
+            #print("The sections covered\n%s" % zcov)
+            #print("The remaining charge %skWh" % remaining_charge)
+
+            total_km_normal = sum([x.distance if x.section_type == 0 else 0 for x in route.sections])
+            total_km_green = sum([x.distance if x.section_type == 1 else 0 for x in route.sections])
+            travelled_km_normal = 0
+            travelled_km_green = 0
+            for i in range(len(hof[0])):
+                if route.sections[i].section_type == 0:
+                    green_exp = '0'
+                    normal_exp = '1'
+                else:
+                    green_exp = '1'
+                    normal_exp = '0'
+                distance = route.sections[i].distance
+                slope = route.sections[i].slope
+                charge = charges[i]
+                remaining_normal = total_km_normal - travelled_km_normal
+                remaining_green = total_km_green - travelled_km_green
+                travelled_km_normal += distance if route.sections[i].section_type == 0 else 0
+                travelled_km_green += distance if route.sections[i].section_type == 1 else 0
+                y = hof[0][i]
+                dataset_writer.writerow([green_exp, normal_exp, distance, slope, charge, remaining_normal, remaining_green, y])
 
 
