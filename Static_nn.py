@@ -17,7 +17,7 @@ def main(x_train, x_test, y_train, y_test, n_layers, n_neurons):
     input_size = 6
     batch_size = 32
     hidden_neurons = n_neurons
-    epochs = 25000
+    epochs = 10000
 
     model = Sequential()
     for i in range(n_layers):
@@ -28,10 +28,10 @@ def main(x_train, x_test, y_train, y_test, n_layers, n_neurons):
     model.add(Activation('softmax'))
 
     model.compile(loss='categorical_crossentropy', metrics=['accuracy'],
-                  optimizer='sgd')
+                  optimizer='adamax')
 
     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
-              verbose=1)
+              verbose=1, validation_split=0.1)
 
     score = model.evaluate(x_test, y_test, verbose=1)
     print('Test accuracy:', score[1])
@@ -85,14 +85,22 @@ y_train = y[:p, :]
 x_test = x[p:, :]
 y_test = y[p:, :]
 
-# ****Train and save the model****
+# ****Train and save the models****
 os.remove('static_nn_results.csv')
-for n_n in [14]:
-    for n_l in [5]:
+for n_n in [10]:
+    for n_l in [3]:
         model, score = main(x_train, x_test, y_train, y_test, n_l, n_n)
         model.save('models/trained_model'+str(n_l)+'_'+str(n_n)+'.h5')
         f_result = open('static_nn_results.csv', 'a')
         aux = str(n_l)+','+str(n_n)+','+str(score)+'\n'
         f_result.write(aux)
 
-# Top Test accuracy: 0.7814371258458432 - con 10000 epochs, 5 capas y 14 neuronas
+
+# Test accuracy: 0.7719107241038726 - con 1000 epochs, 1 capa y 40 neuronas y adam
+# Test accuracy: 0.7646394273684832 - con 10000 epochs, 3 capas y 10 neuronas y sgd
+# Test accuracy: 0.7754491018288544 - con 10000 epochs, 3 capas y 10 neuronas y adam
+# Test accuracy: 0.7770821991405477 - con 10000 epochs, 3 capas y 10 neuronas y adamax
+# Test accuracy: 0.7509526402390905 - con 10000 epochs, 3 capas y 10 neuronas y adagrad
+# Test accuracy: 0.7645617855198693 - con 10000 epochs, 3 capas y 10 neuronas y adadelta
+# Test accuracy: 0.7684431138373485 - con 10000 epochs, 3 capas y 10 neuronas y rmsprop
+# Test accuracy: 0.7623843221347749 - con 10000 epochs, 3 capas y 10 neuronas y nadam
