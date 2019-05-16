@@ -1,19 +1,21 @@
 import Simulation
 from Bus import Bus
-from Create_route_csv import read_route
 import Constants as ct
 import random
 import numpy
-import matplotlib.pyplot as plt
 from deap import base, creator, tools, algorithms
 import csv
-
+from Create_route_csv import create_route, read_route
 
 # ****Parameters and environment initialization****
-path_windows2 = 'E:\Dropbox\TFG\TFG_code\\routes\\route20.csv'
-path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/route.csv'
 
-#create_route(path_windows)  # use when a new green section assignation required (random)
+# paths for each green coverage percentage
+path_windows = 'E:\Dropbox\TFG\TFG_code\Escenario.csv'
+path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/Escenario.csv'
+path_windows2 = 'E:\Dropbox\TFG\TFG_code\\routes\\route10.csv'
+path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/routes/route10.csv'
+
+#create_route(path_windows, 0.2)  # use when a new green section assignation required (random)
 route = read_route(path_windows2)
 
 zexp = []
@@ -27,22 +29,6 @@ for sec in route.sections:
         normalKm_expected += sec.distance
 
 
-# ****This function prints some info about the population of each generation****
-def print_info(individual, km_cov, zcov, charge, fit, arrival_times):
-    print(individual, end="")
-    print(", km_cov: ", end="")
-    print(km_cov)
-    print(", cubierto: ", end="")
-    print(zcov)
-    print(", bateria: ", end="")
-    print(charge)
-    print(", fitness: ", end="")
-    print(fit)
-    print(", tiempos de llegada: ", end="")
-    print(arrival_times)
-    print("\n")
-
-
 # ****This function evaluates the zone assignment****
 def eval_zone(individual):
     main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
@@ -51,14 +37,12 @@ def eval_zone(individual):
 
     fit = 0
     for i, t in enumerate(zexp):
-        if t == 1 and zcov[i] == 1:
+        if t == 1:
             fit += 2*km_cov[i]
         if t == 0:
             fit += km_cov[i]
         if t == 1 and zcov[i] == 0:
             fit -= (route.sections[i].distance*0.001 - km_cov[i])*10000
-
-    #print_info(individual, km_cov, zcov, charge, fit, arrival_times)
 
     return fit,
 
@@ -98,43 +82,39 @@ if __name__ == "__main__":
     pop, log, hof = zone_assignment_system()
     print("Best individual is: %s\nwith fitness: %s" % (hof[0], hof[0].fitness))
 
-    main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
+    # ****Writes the result in a csv file****
+    # The format of the data is:
+    # [green expected, normal expected, distance, slope, remaining charge, remaining meters (normal),
+    # remaining meters (green), fitness of the GA]
 
-    [km_cov, zcov, remaining_charge, charges] = Simulation.simulation_noSchedule(hof[0], main_bus, zexp)
+    with open("route_for_nn10.csv", mode='w', newline='') as route_nn:
+        route_writer = csv.writer(route_nn, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    print("The expected sections to be covered\n%s" % zexp)
-    print("The sections covered\n%s" % zcov)
-    print("The remaining charge %skWh" % remaining_charge)
+        main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
 
-    normal_kms = 0
-    green_kms = 0
-    sections = route.sections
-    for i, sec in enumerate(sections):
-        if sec.section_type == 1:
-            green_kms += km_cov[i]
-        else:
-            normal_kms += km_cov[i]
+        [km_cov, zcov, remaining_charge, charges] = Simulation.simulation_noSchedule(hof[0], main_bus, zexp)
 
-    print("Green kms covered: %s of %s" % (green_kms, greenKm_expected/1000))
-    print("Normal kms covered: %s of %s" % (normal_kms, normalKm_expected/1000))
+        print("The expected sections to be covered\n%s" % zexp)
+        print("The sections covered\n%s" % zcov)
+        print("The remaining charge %skWh" % remaining_charge)
 
-    # ****Write the solution in the format: [fitness,0,1,0,....]****
-    with open('solution_ev.csv', mode='w', newline='') as dataset:
-        dataset_writer = csv.writer(dataset, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        aux = [hof[0].fitness.values[0]]
-        aux = aux + hof[0]
-
-        dataset_writer.writerow(aux)
-
-    # ****Plot the fitness by generations (minimum, maximum, average)****
-    gen, avg, min_, max_ = log.select("gen", "avg", "min", "max")
-    plt.plot(gen, avg, label="average")
-    plt.plot(gen, min_, label="minimum")
-    plt.plot(gen, max_, label="maximum")
-    plt.xlabel("Generation")
-    plt.ylabel("Fitness")
-    plt.legend(loc="lower right")
-    plt.show()
-
-
+        total_km_normal = sum([x.distance if x.section_type == 0 else 0 for x in route.sections])
+        total_km_green = sum([x.distance if x.section_type == 1 else 0 for x in route.sections])
+        travelled_km_normal = 0
+        travelled_km_green = 0
+        for i in range(len(hof[0])):
+            if route.sections[i].section_type == 0:
+                green_exp = '0'
+                normal_exp = '1'
+            else:
+                green_exp = '1'
+                normal_exp = '0'
+            distance = route.sections[i].distance
+            slope = route.sections[i].slope
+            charge = charges[i]
+            remaining_normal = total_km_normal - travelled_km_normal
+            remaining_green = total_km_green - travelled_km_green
+            travelled_km_normal += distance if route.sections[i].section_type == 0 else 0
+            travelled_km_green += distance if route.sections[i].section_type == 1 else 0
+            y = hof[0][i]
+            route_writer.writerow([green_exp, normal_exp, distance, slope, charge, remaining_normal, remaining_green, hof[0].fitness.values[0]])
