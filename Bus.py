@@ -1,5 +1,5 @@
 class Bus:
-    def __init__(self, identity, route, charge, load, ac):
+    def __init__(self, identity, route, charge, ac):
         """
 
         :param identity: identifies the bus
@@ -11,5 +11,4 @@ class Bus:
         self.identity = identity
         self.route = route
         self.charge = charge
-        self.load = load
         self.ac = ac

@@ -87,8 +87,8 @@ y_test = y[p:, :]
 
 # ****Train and save the models****
 os.remove('static_nn_results.csv')
-for n_n in [10]:
-    for n_l in [3]:
+for n_n in [1]:
+    for n_l in [1]:
         model, score = main(x_train, x_test, y_train, y_test, n_l, n_n)
         model.save('models/trained_model'+str(n_l)+'_'+str(n_n)+'.h5')
         f_result = open('static_nn_results.csv', 'a')

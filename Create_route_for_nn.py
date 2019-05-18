@@ -31,9 +31,9 @@ for sec in route.sections:
 
 # ****This function evaluates the zone assignment****
 def eval_zone(individual):
-    main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
+    main_bus = Bus(1, route, ct.initial_charge, 1.3)
 
-    [km_cov, zcov, charge, charges] = Simulation.simulation_noSchedule(individual, main_bus, zexp)
+    [km_cov, zcov, charge, charges] = Simulation.static_simulation(individual, main_bus)
 
     fit = 0
     for i, t in enumerate(zexp):
@@ -90,9 +90,9 @@ if __name__ == "__main__":
     with open("route_for_nn10.csv", mode='w', newline='') as route_nn:
         route_writer = csv.writer(route_nn, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
+        main_bus = Bus(1, route, ct.initial_charge, 1.3)
 
-        [km_cov, zcov, remaining_charge, charges] = Simulation.simulation_noSchedule(hof[0], main_bus, zexp)
+        [km_cov, zcov, remaining_charge, charges] = Simulation.static_simulation(hof[0], main_bus)
 
         print("The expected sections to be covered\n%s" % zexp)
         print("The sections covered\n%s" % zcov)

@@ -7,6 +7,7 @@ import numpy
 import matplotlib.pyplot as plt
 from deap import base, creator, tools, algorithms
 import csv
+import time
 
 
 # ****Parameters and environment initialization****
@@ -45,9 +46,9 @@ def print_info(individual, km_cov, zcov, charge, fit, arrival_times):
 
 # ****This function evaluates the zone assignment****
 def eval_zone(individual):
-    main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
+    main_bus = Bus(1, route, ct.initial_charge, 1.3)
 
-    [km_cov, zcov, charge, charges] = Simulation.simulation_noSchedule(individual, main_bus, zexp)
+    [km_cov, zcov, charge, charges] = Simulation.static_simulation(individual, main_bus)
 
     fit = 0
     for i, t in enumerate(zexp):
@@ -98,9 +99,9 @@ if __name__ == "__main__":
     pop, log, hof = zone_assignment_system()
     print("Best individual is: %s\nwith fitness: %s" % (hof[0], hof[0].fitness))
 
-    main_bus = Bus(1, route, ct.initial_charge, [3500, 2800, 1125, 800, 3000, 2200, 2340], 1.3)
+    main_bus = Bus(1, route, ct.initial_charge, 1.3)
 
-    [km_cov, zcov, remaining_charge, charges] = Simulation.simulation_noSchedule(hof[0], main_bus, zexp)
+    [km_cov, zcov, remaining_charge, charges] = Simulation.static_simulation(hof[0], main_bus)
 
     print("The expected sections to be covered\n%s" % zexp)
     print("The sections covered\n%s" % zcov)
