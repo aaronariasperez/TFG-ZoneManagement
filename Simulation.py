@@ -189,18 +189,20 @@ def dynamic_simulation(main_bus, model, km_normal_total, km_green_total, norm_da
             dist = 0
 
             if s.slope >= 1:
-                future_charge = main_bus.charge - (ct.light_uphill_comsuption * s.distance * 0.001) * main_bus.ac
+                r = np.random.exponential(0.1)
+                future_charge = main_bus.charge - (ct.light_uphill_comsuption * s.distance * 0.001) * main_bus.ac - r
 
                 if future_charge >= 0:
                     dist = s.distance*0.001
                     main_bus.charge = future_charge
                     zone_covered[index] = 1
                 else:
-                    dist = float(main_bus.charge) / (ct.light_uphill_comsuption*main_bus.ac)
+                    dist = float(main_bus.charge - r) / (ct.light_uphill_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
             elif -1 < s.slope < 1:
-                future_charge = main_bus.charge - (ct.flat_comsuption * s.distance * 0.001) * main_bus.ac
+                r = np.random.exponential(0.1)
+                future_charge = main_bus.charge - (ct.flat_comsuption * s.distance * 0.001) * main_bus.ac - r
 
                 if future_charge >= 0:
                     dist = s.distance * 0.001
@@ -208,18 +210,19 @@ def dynamic_simulation(main_bus, model, km_normal_total, km_green_total, norm_da
                     zone_covered[index] = 1
                 else:
 
-                    dist = float(main_bus.charge) / (ct.flat_comsuption*main_bus.ac)
+                    dist = float(main_bus.charge - r) / (ct.flat_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
             elif s.slope <= -1:
-                future_charge = main_bus.charge - (ct.light_downhill_comsuption * s.distance * 0.001) * main_bus.ac
+                r = np.random.exponential(0.1)
+                future_charge = main_bus.charge - (ct.light_downhill_comsuption * s.distance * 0.001) * main_bus.ac - r
 
                 if future_charge >= 0:
                     dist = s.distance * 0.001
                     main_bus.charge = future_charge
                     zone_covered[index] = 1
                 else:
-                    dist = float(main_bus.charge) / (ct.light_downhill_comsuption*main_bus.ac)
+                    dist = float(main_bus.charge - r) / (ct.light_downhill_comsuption*main_bus.ac)
                     main_bus.charge = 0
 
             km_cov[index] = dist

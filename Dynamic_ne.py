@@ -32,8 +32,8 @@ model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy', metrics=['accuracy'],
               optimizer='adamax')
 
-path_windows2 = 'E:\Dropbox\TFG\TFG_code\\routes\\route20.csv'
-path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/routes/route2.csv'
+path_windows2 = 'E:\Dropbox\TFG\TFG_code\\routes\\route15.csv'
+path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/routes/route15.csv'
 
 route = read_route(path_windows2)
 max_dist = max([a.distance for a in route.sections])
@@ -52,22 +52,6 @@ for sec in route.sections:
         normalKm_expected += sec.distance
 
 
-# ****This function prints some info about the population of each generation****
-def print_info(individual, km_cov, zcov, charge, fit, arrival_times):
-    print(individual, end="")
-    print(", km_cov: ", end="")
-    print(km_cov)
-    print(", cubierto: ", end="")
-    print(zcov)
-    print(", bateria: ", end="")
-    print(charge)
-    print(", fitness: ", end="")
-    print(fit)
-    print(", tiempos de llegada: ", end="")
-    print(arrival_times)
-    print("\n")
-
-
 def modify_model(individual):
     model.layers[0].set_weights(
         list([numpy.array(numpy.reshape(individual[:60], (6, 10))), numpy.array(individual[60:70])]))
@@ -81,29 +65,28 @@ def modify_model(individual):
 
 # ****This function evaluates the zone assignment****
 def eval_zone(individual):
-    #print("******************************")
-    #start = time.time()
     modify_model(individual)
-    #print("Tiempo de modificacion: %s" % str(time.time() - start))
-    main_bus = Bus(1, route, ct.initial_charge, 1.3)
+    fits = []
+    for i in range(10):
 
-    #print("******************************")
-    #start = time.time()
-    [individual, km_cov, zcov, charge, charges] = Simulation.dynamic_simulation(main_bus, model, normalKm_expected,
-                                                                                greenKm_expected, [max_dist, min_dist, max_slope, min_slope])
-    #print("Tiempo de simulacion: %s" % str(time.time()-start))
-    fit = 0
-    for i, t in enumerate(zexp):
-        if t == 1 and zcov[i] == 1:
-            fit += 2*km_cov[i]
-        if t == 0:
-            fit += km_cov[i]
-        if t == 1 and zcov[i] == 0:
-            fit -= (route.sections[i].distance*0.001 - km_cov[i])*10000
+        main_bus = Bus(1, route, ct.initial_charge, 1.3)
 
-    # print_info(individual, km_cov, zcov, charge, fit, arrival_times)
+        #print("******************************")
+        #start = time.time()
+        [zone_assignment, km_cov, zcov, charge, charges] = Simulation.dynamic_simulation(main_bus, model, normalKm_expected,
+                                                                                    greenKm_expected, [max_dist, min_dist, max_slope, min_slope])
+        #print("Tiempo de simulacion: %s" % str(time.time()-start))
+        fit = 0
+        for i, t in enumerate(zexp):
+            if t == 1 and zcov[i] == 1:
+                fit += 2*km_cov[i]
+            if t == 0:
+                fit += km_cov[i]
+            if t == 1 and zcov[i] == 0:
+                fit -= (route.sections[i].distance*0.001 - km_cov[i])*10000
+        fits.append(fit)
 
-    return fit,
+    return numpy.mean(fits),
 
 
 # ****Evolutionary algorithm configuration****
@@ -149,6 +132,7 @@ if __name__ == "__main__":
 
     [zone_assignment, km_cov, zcov, remaining_charge, charges] = Simulation.dynamic_simulation(main_bus, model, normalKm_expected, greenKm_expected, [max_dist, min_dist, max_slope, min_slope])
 
+    print("ESTA MEDIDA NO ES REALISTA PORQUE SE ESTA EJECUTANDO UNA VEZ")
     print("The expected sections to be covered\n%s" % zexp)
     print("The assignment of the ANN\n%s" % zone_assignment)
     print("The sections covered\n%s" % zcov)
