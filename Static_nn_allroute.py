@@ -8,7 +8,7 @@ from Create_route_csv import read_route
 import time
 
 
-path_windows = 'E:\Dropbox\TFG\TFG_code\\route_for_nn10.csv'
+path_windows = 'E:\Dropbox\TFG\TFG_code\\route_for_nn20.csv'
 path_linux = r'/home/aaron/Dropbox/TFG/TFG_code/route_for_nn10.csv'
 path_windows3 = 'E:\Dropbox\TFG\TFG_code\\trained_model3_10_adamax_best.h5'
 path_linux3 = r'/home/aaron/Dropbox/TFG/TFG_code/trained_model3_10_adamax_best.h5'
@@ -69,7 +69,7 @@ for i, s in enumerate(sections):
         individual.append(1)
 end = time.time()
 
-path_windows4 = 'E:\Dropbox\TFG\TFG_code\\routes\\route10.csv'
+path_windows4 = 'E:\Dropbox\TFG\TFG_code\\routes\\route20.csv'
 path_linux4 = r'/home/aaron/Dropbox/TFG/TFG_code/routes/route10.csv'
 
 route = read_route(path_windows4)

@@ -9,7 +9,7 @@ import time
 
 
 path_windows2 = 'E:\Dropbox\TFG\TFG_code\\routes\\route20.csv'
-path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/routes/route5.csv'
+path_linux2 = r'/home/aaron/Dropbox/TFG/TFG_code/routes/route10.csv'
 path_windows3 = 'E:\Dropbox\TFG\TFG_code\\dynamic_model_ne.h5'
 path_linux3 = r'/home/aaron/Dropbox/TFG/TFG_code/dynamic_model_ne.h5'
 
@@ -35,7 +35,7 @@ for sec in route.sections:
 # ****This function evaluates the zone assignment****
 def eval_model():
     fits = []
-    for i in range(1000):
+    for i in range(10000):
 
         main_bus = Bus(1, route, ct.initial_charge, 1.3)
 
@@ -58,10 +58,10 @@ def eval_model():
 fits, zone_assignment, zcov, remaining_charge, km_cov = eval_model()
 
 print("Fitness: %s" % fits)
-print("The expected sections to be covered\n%s" % zexp)
-print("The assignment of the ANN\n%s" % zone_assignment)
-print("The sections covered\n%s" % zcov)
-print("The remaining charge %skWh" % remaining_charge)
+#print("The expected sections to be covered\n%s" % zexp)
+#print("The assignment of the ANN\n%s" % zone_assignment)
+#print("The sections covered\n%s" % zcov)
+#print("The remaining charge %skWh" % remaining_charge)
 
 normal_kms = 0
 green_kms = 0
@@ -72,8 +72,8 @@ for i, sec in enumerate(sections):
     else:
         normal_kms += km_cov[i]
 
-print("Green kms covered: %s of %s" % (green_kms, greenKm_expected/1000))
-print("Normal kms covered: %s of %s" % (normal_kms, normalKm_expected/1000))
+#print("Green kms covered: %s of %s" % (green_kms, greenKm_expected/1000))
+#print("Normal kms covered: %s of %s" % (normal_kms, normalKm_expected/1000))
 
 count_valid = 0
 count_novalid = 0
