@@ -9,7 +9,7 @@ En el dinámico, la decisión por cada tramo se va tomando a medida que se va ej
 
 Se ha implementado un simulador simplificado para cada contexto, de manera que podamos entrenar y testear nuestros modelos.
 
-##Información sobre la ejecución (en construcción)##
+## Información sobre la ejecución (en construcción) ##
 
 Para crear los datasets, hay que ejecutar el script 'run.bat' una vez por cada proporción de tramos verdes que se quiera cubrir, en una consola distinta cada una para crear
 5 procesos para utilizar 5 núcleos de la CPU.
@@ -17,9 +17,13 @@ Para crear los datasets, hay que ejecutar el script 'run.bat' una vez por cada p
 Antes de esto hay que limpiar las carpetas 'datasets' y 'routes'.
 
 start run.bat 0.02
+
 start run.bat 0.05
+
 start run.bat 0.1
+
 start run.bat 0.15
+
 start run.bat 0.2
 
 Al ejecutar estos 5 comandos en 5 consolas distintas, se creará en la carpeta datasets un datasetX.csv donde X es el porcentaje de tramo verde que se quiere cubrir. 
